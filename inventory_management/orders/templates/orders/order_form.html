@@ -1,0 +1,14 @@
+<!-- templates/orders/order_form.html -->
+{% extends 'base.html' %}
+
+{% block title %}Add/Edit Order{% endblock %}
+
+{% block content %}
+    <h2>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Order</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+    <a href="{% url 'order_list' %}">Cancel</a>
+{% endblock %}

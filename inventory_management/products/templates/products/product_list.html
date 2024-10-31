@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Product List{% endblock %}
+
+{% block content %}
+    <h2>Product List</h2>
+
+    <!-- Only admin users (staff) can see the 'Add New Product' link -->
+    {% if user.is_staff %}
+        <a href="{% url 'product_create' %}">Add New Product</a>
+    {% endif %}
+    
+    {% if products %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <!-- Show Actions column only if the user is an admin -->
+                    {% if user.is_staff %}
+                        <th>Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.description }}</td>
+                        <td>{{ product.stock_level }}</td>
+                        <td>{{ product.price }}</td>
+                        <!-- Only admin users (staff) can see 'Edit' and 'Delete' options -->
+                        {% if user.is_staff %}
+                            <td>
+                                <a href="{% url 'product_update' product.pk %}">Edit</a>
+                                <a href="{% url 'product_delete' product.pk %}">Delete</a>
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">No products available.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No products available.</p>
+    {% endif %}
+{% endblock %}
