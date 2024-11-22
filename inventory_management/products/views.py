@@ -3,6 +3,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product
 from .forms import ProductForm
 from django.contrib.auth.decorators import login_required, user_passes_test
+import matplotlib.pyplot as plt
+import io
+from django.http import HttpResponse
+from django.contrib import messages
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -64,10 +68,44 @@ def check_reorder_levels(request):
     low_stock_products = []
 
     for product in products:
-        if product.quantity <= product.reorder_level:
+        if product.stock_level <= product.reorder_level:
             low_stock_products.append(product)
 
     if low_stock_products:
         messages.warning(request, 'The following products need to be restocked: {}'.format(', '.join([product.name for product in low_stock_products])))
 
     return render(request, 'products/check_reorder_levels.html', {'low_stock_products': low_stock_products})
+
+# views.py
+
+
+@login_required
+@user_passes_test(is_admin)
+def product_chart(request):
+    # Get the data
+    products = Product.objects.all()
+    product_names = [product.name for product in products]
+    product_quantities = [product.stock_level for product in products]
+
+    # Create the plot
+    fig, ax = plt.subplots(figsize=(10, 6))  # Increase the figure size to give more space
+    ax.bar(product_names, product_quantities)
+
+    # Rotate the x-axis labels to make them more readable
+    ax.set_xticklabels(product_names, rotation=45, ha='right')
+
+    # Add a title to the chart
+    ax.set_title('Analytics', fontsize=16)
+
+    # Improve layout to prevent clipping of labels
+    plt.tight_layout()
+
+    # Save it to a bytes buffer
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+
+    # Return the image in the response
+    return HttpResponse(buf, content_type='image/png')
+
+

@@ -5,7 +5,103 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        /* General Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #e6f7ff; /* Light sky blue */
+            color: #2c3e50; /* Darker text for readability */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .auth-container {
+            background-color: #ffffff; /* White content background */
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-container h2 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #3498db; /* Sky blue for header text */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .form-group input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        button {
+            background-color: #3498db; /* Sky blue button */
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #1d6fa5; /* Darker blue on hover */
+        }
+
+        p {
+            margin-top: 15px;
+            font-size: 0.9em;
+        }
+
+        p a {
+            color: #3498db; /* Link color */
+            text-decoration: none;
+        }
+
+        p a:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            color: #721c24; /* Error message color */
+            background-color: #f8d7da; /* Error background */
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+    </style>
     <script>
         // Function to toggle password visibility
         function togglePassword() {
@@ -27,8 +123,10 @@
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input type="password" name="password" id="password" required>
-                <input type="checkbox" id="showPassword" onclick="togglePassword()">
-                <label for="showPassword">Show Password</label>
+                <div>
+                    <input type="checkbox" id="showPassword" onclick="togglePassword()">
+                    <label for="showPassword">Show Password</label>
+                </div>
             </div>
             <button type="submit">Login</button>
         </form>

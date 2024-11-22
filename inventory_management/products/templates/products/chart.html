@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Product Stock Chart{% endblock %}
+
+{% block content %}
+<h2>Product Stock Chart</h2>
+
+<!-- Container for the chart image -->
+<div class="chart-container">
+    <img src="{% url 'product_chart' %}" alt="Product Stock Chart" class="chart-image">
+</div>
+
+<a href="{% url 'product_list' %}" class="btn btn-secondary">Back to Products</a>
+
+<!-- Style section -->
+<style>
+    .chart-container {
+        max-width: 80%;  /* Control the max width */
+        margin: 0 auto;  /* Center align the image */
+        padding: 20px;
+        text-align: center;
+    }
+
+    .chart-image {
+        width: 100%; 
+        max-width: 800px; 
+        height: auto;
+        border: 1px solid #ccc;  
+    }
+
+    .btn {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}
+

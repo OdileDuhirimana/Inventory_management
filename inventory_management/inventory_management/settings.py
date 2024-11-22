@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'orders',
     'users',
     'notifications',
-    'notifications_app',
     'channels',
 ]
 
@@ -143,9 +142,7 @@ LOGIN_REDIRECT_URL = '/home/'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
 CHANNEL_LAYERS = {
