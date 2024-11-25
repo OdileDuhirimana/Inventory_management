@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,28 +8,34 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
+
 <body>
     <header>
         <h1>Inventory Management System</h1>
         <nav>
             <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
                 <li><a href="{% url 'product_list' %}">Products</a></li>
                 <li><a href="{% url 'order_list' %}">Orders</a></li>
+                {% if user.is_staff %}
+                <li><a href="{% url 'chart' %}">Chart</a></li>
+                {% endif %}
                 <li><a href="{% url 'logout' %}">Logout</a></li>
             </ul>
+
         </nav>
     </header>
-    
+
     <main>
         {% block content %}{% endblock %}
         <div id="notificationArea">
             {% if messages %}
             <h2>Notifications</h2>
-                {% for message in messages %}
-                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
             {% endif %}
         </div>
     </main>
@@ -40,10 +47,11 @@
     </footer>
 
     <script>
-        
-        document.addEventListener('DOMContentLoaded', function() {
-    
+
+        document.addEventListener('DOMContentLoaded', function () {
+
         });
     </script>
 </body>
+
 </html>

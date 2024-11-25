@@ -4,7 +4,7 @@ from .models import Product
 from .forms import ProductForm
 from django.contrib.auth.decorators import login_required, user_passes_test
 import matplotlib.pyplot as plt
-import io
+import io, base64
 from django.http import HttpResponse
 from django.contrib import messages
 
@@ -82,30 +82,27 @@ def check_reorder_levels(request):
 @login_required
 @user_passes_test(is_admin)
 def product_chart(request):
-    # Get the data
+    # Your view logic for rendering the product chart
     products = Product.objects.all()
+    if not products.exists():
+        return HttpResponse("No products available.", content_type="text/plain")
     product_names = [product.name for product in products]
     product_quantities = [product.stock_level for product in products]
-
-    # Create the plot
-    fig, ax = plt.subplots(figsize=(10, 6))  # Increase the figure size to give more space
-    ax.bar(product_names, product_quantities)
-
-    # Rotate the x-axis labels to make them more readable
+    reorder_levels = [product.reorder_level for product in products]
+    below_reorder_level = [
+        product.stock_level < product.reorder_level for product in products
+    ]
+    fig, ax = plt.subplots(figsize=(10, 6))
+    bar_colors = ['red' if below else 'skyblue' for below in below_reorder_level]
+    ax.bar(product_names, product_quantities, color=bar_colors)
+    ax.set_xticks(range(len(product_names)))
     ax.set_xticklabels(product_names, rotation=45, ha='right')
-
-    # Add a title to the chart
-    ax.set_title('Analytics', fontsize=16)
-
-    # Improve layout to prevent clipping of labels
+    ax.set_title('Product Stock Levels', fontsize=16)
+    ax.set_xlabel('Products', fontsize=12)
+    ax.set_ylabel('Stock Levels', fontsize=12)
     plt.tight_layout()
-
-    # Save it to a bytes buffer
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)
-
-    # Return the image in the response
-    return HttpResponse(buf, content_type='image/png')
-
-
+    img_str = base64.b64encode(buf.getvalue()).decode('utf-8')
+    return render(request, 'chart.html', {'chart': img_str})
