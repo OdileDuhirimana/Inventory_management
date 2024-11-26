@@ -1,9 +1,10 @@
-from django.shortcuts import render, get_object_or_404, redirect # type: ignore
+from django.shortcuts import render, get_object_or_404, redirect 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Order
 from django.contrib import messages
 from .forms import OrderForm
-from products.models import Product  # Import the Product model
+from products.models import Product  
+from django.http import JsonResponse
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -16,9 +17,22 @@ def order_list(request):
     else:
         orders = Order.objects.filter(user=request.user)
 
-    print("Orders retrieved:", orders)  # Debug output
+    print("Orders retrieved:", orders) 
     return render(request, 'orders/order_list.html', {'orders': orders})
 
+
+def all_orders_api(request):
+    orders = Order.objects.all()   
+    data = [
+        {
+            'product': order.product,
+            'quantity': order.quantity,
+            'date': order.created_at,
+        }
+        for order in orders
+    ]
+    
+    return JsonResponse({'orders': data}, safe=False)
 
 @login_required
 def order_create(request):

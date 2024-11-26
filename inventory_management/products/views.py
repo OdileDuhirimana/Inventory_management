@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import io, base64
 from django.http import HttpResponse
 from django.contrib import messages
+from django.http import JsonResponse 
 
 def is_admin(user):
     return user.is_staff or user.is_superuser
@@ -16,6 +17,28 @@ def is_admin(user):
 def product_list(request):
     products = Product.objects.all()
     return render(request, 'products/product_list.html', {'products': products})
+
+def all_products_api(request):
+    # Fetch all products
+    products = Product.objects.all()
+    
+    # Prepare the data to be returned
+    data = [
+        {
+            'id': product.id,
+            'name': product.name,
+            'description': product.description,
+            'sku': product.sku,
+            'price': float(product.price),  # Convert Decimal to float for JSON compatibility
+            'stock_level': product.stock_level,
+            'reorder_level': product.reorder_level,
+            'low_stock_alert': product.low_stock_alert,
+            'needs_reorder': product.needs_reorder(),  # Call the dynamic method
+        }
+        for product in products
+    ]
+    
+    return JsonResponse({'products': data}, safe=False)
 
 
 @login_required
@@ -59,6 +82,7 @@ def product_delete(request, pk):
         product.delete()
         return redirect('product_list')
     return render(request, 'products/product_confirm_delete.html', {'product': product})
+
 
 
 @login_required

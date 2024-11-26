@@ -4,6 +4,8 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.contrib import messages  
+from .models import CustomUser
+from django.http import JsonResponse
 
 def register(request):
     if request.method == 'POST':
@@ -43,3 +45,25 @@ def logout_view(request):
 @login_required
 def home(request):
     return render(request, 'home.html')
+
+def all_users_api(request):
+    # Fetch all users
+    users = CustomUser.objects.all()
+    data = [
+        {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'bio': user.bio,
+            'groups': [group.name for group in user.groups.all()],  # List group names
+            'permissions': [permission.codename for permission in user.user_permissions.all()],  # List permissions
+            'is_staff': user.is_staff,
+            'is_active': user.is_active,
+            'is_superuser': user.is_superuser,
+        }
+        for user in users
+    ]
+
+    return JsonResponse({'users': data}, safe=False)
