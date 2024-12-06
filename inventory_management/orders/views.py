@@ -20,25 +20,35 @@ def order_list(request):
     print("Orders retrieved:", orders) 
     return render(request, 'orders/order_list.html', {'orders': orders})
 
-
 def all_orders_api(request):
-    orders = Order.objects.all()   
-    data = [
-        {
-            'product': order.product,
+    orders = Order.objects.all()
+    if not orders:
+        return JsonResponse({'error': 'No orders found'}, status=404)
+
+    data = []
+    for order in orders:
+        if order.id is None:
+            print(f"Order with missing ID: {order}")  # Debugging line
+        product_name = order.product.name if order.product else 'Unknown Product'
+        user_username = order.user.username if order.user else 'Unknown User'
+
+        data.append({
+            'order_id': order.id,
+            'user_id': order.user.id if order.user else None,  # Ensure user and product exist
+            'user_username': user_username,
+            'product_id': order.product.id if order.product else None,  # Ensure product exists
+            'product_name': product_name,
             'quantity': order.quantity,
-            'date': order.created_at,
-        }
-        for order in orders
-    ]
+            'created_at': order.created_at,
+            'updated_at': order.updated_at,
+            'is_approved': order.is_approved,
+        })
     
     return JsonResponse({'orders': data}, safe=False)
 
 @login_required
 def order_create(request):
     if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
             quantity = form.cleaned_data['quantity']  # Get the requested quantity from the form
             product = form.cleaned_data['product']  # Get the related product from the form
             
